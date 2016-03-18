@@ -1,14 +1,19 @@
-﻿public class ConfigData
+﻿
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class ConfigData : MonoBehaviour
 {
     //CSVファイルの絶対パス
-    const string config_path = "C:\\Users\\s1534\\Desktop\\config.csv";
+    const string config_path = "config";
 
     //CSVファイルの全体のデータ
-    public Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+    public Dictionary<string, System.Collections.Generic.List<string>> dict = new Dictionary<string, System.Collections.Generic.List<string>>();
 
     //マップデータのリスト
     //すべてのエリアの情報を格納
-    public List<MapData> m;
+    public List<MapData> allMap = new List<MapData>();
 
     //エリアの数
     //CSVファイルで定義しておく
@@ -21,17 +26,16 @@
     {
         try
         {
-            using (var sr = new System.IO.StreamReader(@config_path))
+            TextAsset sr = Resources.Load<TextAsset>(config_path);
+
+            char[] kugiri = { '\r', '\n' };
+            string[] layoutInfo = sr.text.Split(kugiri);
+            foreach (var line in layoutInfo)
             {
-                // ストリームの末尾まで繰り返す
-                while (!sr.EndOfStream)
-                {
-                    // ファイルから一行読み込む
-                    var line = sr.ReadLine();
-                    DataSet(line);
-                    //System.Console.WriteLine(line);
-                }
+                DataSet(line);
+                //System.Console.WriteLine(line);
             }
+
         }
         catch (System.Exception e)
         {
@@ -90,11 +94,12 @@
         //マップデータの作成
         foreach (var v in tmp_data)
         {
-            m.Add(new MapData(
+            allMap.Add(new MapData(
                     v.Key,
                     int.Parse(v.Value[0]),
                     data[v.Value[1]].ToArray(),
-                    new Size(int.Parse(v.Value[2]), int.Parse(v.Value[3]))
+                    int.Parse(v.Value[2]),
+                    int.Parse(v.Value[3])
                     )
                  );
         }
@@ -107,16 +112,18 @@
 /// </summary>
 public struct MapData
 {
-    public string name { get; }
-    public int stages_count { get; }
-    public string[] stages_type { get; }
-    public Size size { get; }
+    public string name;
+    public int stages_count;
+    public string[] stages_type;
+    public int size_x;
+    public int size_y;
 
-    public MapData(string _name, int _n, string[] _types, Size _s)
+    public MapData(string _name, int _n, string[] _types, int _s_x, int _s_y)
     {
-        name = _name;
-        stages_count = _n;
-        stages_type = _types;
-        size = _s;
+        this.name = _name;
+        this.stages_count = _n;
+        this.stages_type = _types;
+        this.size_x = _s_x;
+        this.size_y = _s_y;
     }
 }
