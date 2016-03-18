@@ -10,8 +10,7 @@ public class LoadMap : MonoBehaviour {
     public Material material1;
     // Use this for initialization
     void Start () {
-        //texture1 = (Texture)Resources.Load("18");
-        //material1 = Instantiate((Material)Resources.Load("tex")) as Material;
+        
         readMap();
     }
 
@@ -39,10 +38,6 @@ public class LoadMap : MonoBehaviour {
 
     void createObj(GameObject obj, Vector2 pos, int eventtip, string name)
     {
-        //Texture2D texture = Resources.Load(name) as Texture2D;
-        //material1.mainTexture = texture1;
-        //Image img = GameObject.Find("Cube").GetComponent<Image>();
-        //img.sprite = Sprite.Create(texture, new Rect(pos.x, pos.y, texture.width, texture.height), Vector2.zero);
 
         var sr = _cube.GetComponent<SpriteRenderer>();
         sr.sprite = Resources.Load<Sprite>(name);
