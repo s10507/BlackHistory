@@ -97,9 +97,7 @@ public class ConfigData : MonoBehaviour
             allMap.Add(new MapData(
                     v.Key,
                     int.Parse(v.Value[0]),
-                    data[v.Value[1]].ToArray(),
-                    int.Parse(v.Value[2]),
-                    int.Parse(v.Value[3])
+                    data[v.Value[1]].ToArray()
                     )
                  );
         }
@@ -108,22 +106,18 @@ public class ConfigData : MonoBehaviour
 
 /// <summary>
 /// ひとつひとつのマップのデータをまとめたもの
-/// エリアの名前，部屋数，部屋のタイプ，大きさを格納
+/// エリアの名前，部屋数，部屋のタイプを格納
 /// </summary>
 public struct MapData
 {
     public string name;
     public int stages_count;
     public string[] stages_type;
-    public int size_x;
-    public int size_y;
 
-    public MapData(string _name, int _n, string[] _types, int _s_x, int _s_y)
+    public MapData(string _name, int _n, string[] _types)
     {
         this.name = _name;
         this.stages_count = _n;
         this.stages_type = _types;
-        this.size_x = _s_x;
-        this.size_y = _s_y;
     }
 }

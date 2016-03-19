@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class LoadMap : MonoBehaviour
@@ -10,17 +12,25 @@ public class LoadMap : MonoBehaviour
 
     public void readMap(MapData mapdata)
     {
-
+		int[] max_mapsize = new int[2];
+		int rooms_count = mapdata.stages_count;
+        List<TextAsset> layouts = new List<TextAsset>();
         char[] kugiri = { '\r', '\n' };
         string[] layoutInfo;
         string tipname;
         string[] eachInfo;
         int eventtip;
+
         foreach (string stages in mapdata.stages_type)
         {
-            TextAsset _layout = Resources.Load<TextAsset>(stages);
+            layouts.Add(Resources.Load<TextAsset>(stages));
+        }
 
-            layoutInfo = _layout.text.Split(kugiri);
+        max_mapsize = get_max_mapsize(layouts);
+
+        foreach(TextAsset csv in layouts)
+        { 
+            layoutInfo = csv.text.Split(kugiri);
             for (int i = 0; i < layoutInfo.Length; i++)
             {
                 eachInfo = layoutInfo[i].Split(","[0]);
@@ -35,7 +45,6 @@ public class LoadMap : MonoBehaviour
             }
         }
     }
-
 
     void createObj(GameObject obj, Vector2 pos, int eventtip, string name)
     {
@@ -74,6 +83,26 @@ public class LoadMap : MonoBehaviour
                 go.tag = "way";
                 break;
         }
+    }
+
+    int[] get_max_mapsize(List<TextAsset> csv_list)
+    {
+        int max_x = 0;
+        int max_y = 0;
+        string[] layoutInfo;
+        string[] eachInfo;
+        char[] kugiri = { '\r', '\n' };
+        foreach (var csv in csv_list)
+        {
+            layoutInfo = csv.text.Split(kugiri);
+            eachInfo = layoutInfo[0].Split(","[0]);
+            if (eachInfo[0] == "mapSize")
+            {
+                max_x = int.Parse(eachInfo[1]);
+                max_y = int.Parse(eachInfo[2]);
+            }
+        }
+        return new int[] { max_x, max_y };      
     }
 
     // Update is called once per frame
