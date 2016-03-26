@@ -29,17 +29,19 @@ public class LoadMap : MonoBehaviour
         max_mapsize = get_max_mapsize(layouts);
 
         foreach(TextAsset csv in layouts)
-        { 
+        {
+            int[] random_x = randomSet_X(mapdata,max_mapsize[0]);
+            int[] random_y = randomSet_Y(mapdata, max_mapsize[1]);
             layoutInfo = csv.text.Split(kugiri);
-            for (int i = 0; i < layoutInfo.Length; i++)
+            for (int i = 1; i < layoutInfo.Length; i++)
             {
                 eachInfo = layoutInfo[i].Split(","[0]);
                 if (eachInfo[0].Length != 0)
                 {
                     eventtip = int.Parse(eachInfo[0].Substring(eachInfo[0].Length - 1));
                     tipname = eachInfo[0].Substring(0, eachInfo[0].Length - 1);
-                    Vector2 pos = new Vector2(float.Parse(eachInfo[1]) * 32f,
-                                              float.Parse(eachInfo[2]) * 32f);
+                    Vector2 pos = new Vector2(float.Parse(eachInfo[1]) * 32f + random_x[i],
+                                              float.Parse(eachInfo[2]) * 32f + random_y[i]);
                     this.createObj(_maptip, pos, eventtip, tipname);
                 }
             }
@@ -98,11 +100,40 @@ public class LoadMap : MonoBehaviour
             eachInfo = layoutInfo[0].Split(","[0]);
             if (eachInfo[0] == "mapSize")
             {
-                max_x = int.Parse(eachInfo[1]);
-                max_y = int.Parse(eachInfo[2]);
+                if (max_x <= int.Parse(eachInfo[1]))
+                    max_x = int.Parse(eachInfo[1]);
+                if (max_y <= int.Parse(eachInfo[2]))
+                    max_y = int.Parse(eachInfo[2]);
             }
         }
         return new int[] { max_x, max_y };      
+    }
+
+    int[] randomSet_X(MapData mapdata,int maxX)
+    {
+        int areaX;
+        List<int> resultX = new List<int>();
+        areaX = maxX * mapdata.stages_count;
+
+        for (int i = 0; i * maxX < areaX; i++)
+        {
+            resultX.Add( Random.Range(i * maxX, (i+1)* maxX));
+        }
+
+        return resultX.ToArray();
+    }
+
+    int[] randomSet_Y(MapData mapdata,int maxY)
+    {
+        int areaY;
+        List<int> resultY = new List<int>();
+        areaY = maxY * mapdata.stages_count;
+
+        for (int j = 0; j * maxY < areaY; j++)
+        {
+            resultY.Add(Random.Range(j * maxY, (j + 1) * maxY));
+        }
+        return resultY.ToArray();
     }
 
     // Update is called once per frame
