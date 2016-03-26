@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class LoadMap : MonoBehaviour
 {
-    public GameObject _maptip = GameObject.Find( "Tile" );
+    public GameObject _maptip = GameObject.Find("Tile");
     public Texture texture1;
     public Material material1;
 
     public void readMap(MapData mapdata)
     {
-		int[] max_mapsize = new int[2];
-		int rooms_count = mapdata.stages_count;
+        int[] max_mapsize = new int[2];
+        int rooms_count = mapdata.stages_count;
         List<TextAsset> layouts = new List<TextAsset>();
         char[] kugiri = { '\r', '\n' };
         string[] layoutInfo;
@@ -27,24 +27,40 @@ public class LoadMap : MonoBehaviour
         }
 
         max_mapsize = get_max_mapsize(layouts);
+        //maxRect={左上，右上，左下，右下}
+        int[,] maxRect = { { 0,0 }, 
+                           { max_mapsize[0], 0 }, 
+                           { 0, max_mapsize[1] }, 
+                           { max_mapsize[0], max_mapsize[1] }};
+        int indx = 0;
 
-        foreach(TextAsset csv in layouts)
+        foreach (TextAsset csv in layouts)
         {
             int[] random_x = randomSet_X(mapdata,max_mapsize[0]);
             int[] random_y = randomSet_Y(mapdata, max_mapsize[1]);
+            
+
             layoutInfo = csv.text.Split(kugiri);
-            for (int i = 1; i < layoutInfo.Length; i++)
+            for (int i = 0; i < layoutInfo.Length; i++)
             {
                 eachInfo = layoutInfo[i].Split(","[0]);
-                if (eachInfo[0].Length != 0)
+                int intEachInfo_X = int.Parse(eachInfo[0]);
+                int intEachInfo_Y = int.Parse(eachInfo[1]);
+                int[,] partRect = {{ 0,0 },
+                                   { intEachInfo_X, 0 },
+                                   { 0, intEachInfo_Y},
+                                   { intEachInfo_X, intEachInfo_Y }};
+
+                if (eachInfo[0].Length != 0 || i==0)
                 {
                     eventtip = int.Parse(eachInfo[0].Substring(eachInfo[0].Length - 1));
                     tipname = eachInfo[0].Substring(0, eachInfo[0].Length - 1);
-                    Vector2 pos = new Vector2(float.Parse(eachInfo[1]) * 32f + random_x[i],
-                                              float.Parse(eachInfo[2]) * 32f + random_y[i]);
+                    Vector2 pos = new Vector2(float.Parse(eachInfo[1]) * 32f + random_x[indx] * 32f,
+                                              float.Parse(eachInfo[2]) * 32f + random_y[indx] * 32f);
                     this.createObj(_maptip, pos, eventtip, tipname);
                 }
             }
+            indx++;
         }
     }
 
@@ -117,7 +133,7 @@ public class LoadMap : MonoBehaviour
 
         for (int i = 0; i * maxX < areaX; i++)
         {
-            resultX.Add( Random.Range(i * maxX, (i+1)* maxX));
+            resultX.Add( Random.Range(i * maxX, (i + 1)* maxX));
         }
 
         return resultX.ToArray();
